@@ -1,0 +1,17 @@
+[server]
+maxUploadSize = 500
+maxMessageSize = 500
+enableXsrfProtection = true
+enableWebsocketCompression = false
+
+[browser]
+serverAddress = "0.0.0.0"
+serverPort = 8501
+
+[runner]
+fastReruns = true
+magicEnabled = true
+postScriptGC = true
+
+[client]
+showErrorDetails = true
