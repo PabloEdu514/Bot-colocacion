@@ -17,9 +17,11 @@ from langchain_core.prompts import PromptTemplate
 #   DB INIT (colocación)
 # =========================
 DB_CANDIDATES = [
-    "colocacion.db",                 # mismo folder
-    "/mnt/data/colocacion.db"        # fallback (entorno chat/streamlit)
+    "colocacion.db",
+    r"C:\Users\becario_it05\Desktop\IA-CUBO\SP-main\SP-main\colocacion.db"
 ]
+
+
 
 # =========================
 #   Descargar base de datos (versión robusta) — colocacion.db
@@ -27,11 +29,10 @@ DB_CANDIDATES = [
 @st.cache_data(ttl=3600)
 def download_database():
     """
-    Descarga colocacion.db desde Google Drive al path /mnt/data/colocacion.db
-    usando gdown y, si falla, un método alternativo con requests.
-    Devuelve la ruta del archivo si existe y es válido, o None si no se pudo.
+    Descarga colocacion.db desde Google Drive al path del proyecto.
     """
-    db_path = "/mnt/data/colocacion.db"
+    db_path = r"C:\Users\becario_it05\Desktop\IA-CUBO\SP-main\SP-main\colocacion.db"
+
 
     # Si ya existe y pesa "bien", úsala
     if os.path.exists(db_path):
