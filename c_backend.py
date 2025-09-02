@@ -271,6 +271,7 @@ def init_chain():
         llm = ChatOpenAI(model_name='gpt-4o-mini', temperature=0)
         query_chain = create_sql_query_chain(llm, db)
 
+        # ✅ ÚNICO CAMBIO: prompt con mejor interpretación (sin romper tu flujo)
         answer_prompt = PromptTemplate.from_template(
             """
 Base de datos de COLocación (vista principal: `vw_fact_colocacion_bruta_detalle`).
@@ -290,7 +291,12 @@ Pregunta del usuario: {question}
 Consulta SQL generada: {query}
 Resultado SQL (muestra): {result}
 
-Redacta respuesta breve y clara.
+Tarea: Redacta una interpretación breve y clara en lenguaje natural para negocio:
+- Explica qué se filtró (año/mes/trimestre/sucursal) si se aprecia en la consulta.
+- Resume el hallazgo principal (totales, top/bottom o tendencias) de forma concisa.
+- Si parece un ranking, menciona quién encabeza y el valor aproximado.
+- No te limites a decir "aquí está la consulta": aporta 1–3 insights útiles.
+- No inventes datos fuera de lo mostrado.
 """
         )
         return query_chain, db, answer_prompt, llm
@@ -348,6 +354,7 @@ def consulta(pregunta_usuario: str):
 
         actualizar_ultima_sucursal(consulta_sql)
 
+        # Mantenemos tu muestra pequeña para que el LLM tenga contexto, sin cambiar el resto del flujo
         muestra = str(filas[:3]) + (" ..." if len(filas) > 3 else "")
         with st.spinner("💬 Generando respuesta..."):
             respuesta = llm.invoke(prompt.format_prompt(
@@ -356,6 +363,7 @@ def consulta(pregunta_usuario: str):
                 result=muestra
             ).to_string())
 
+        # ENTREGAMOS EL DF COMPLETO (el front lo pinta completo con scroll)
         df = pd.DataFrame(filas, columns=columnas)
         return (respuesta.content if hasattr(respuesta, "content") else str(respuesta)), df, consulta_sql
 
